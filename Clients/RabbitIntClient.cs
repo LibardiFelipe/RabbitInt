@@ -17,15 +17,20 @@ namespace RabbitInt.Clients
         }
 
         public IMessageService Message { get; private set; }
+        public IManagementService Management { get; private set; }
 
-        private void InitializeClients(IServiceProvider serviceProvider) =>
+        private void InitializeClients(IServiceProvider serviceProvider)
+        {
             Message = serviceProvider.GetService<IMessageService>();
+            Management = serviceProvider.GetService<IManagementService>();
+        }
 
         private static IServiceProvider RegisterServices(ConnectionFactory connFactory)
         {
             var serviceCollection = new ServiceCollection()
                 .AddSingleton(connFactory)
                 .AddTransient<IRabbitMQBroker, RabbitMQBroker>()
+                .AddTransient<IManagementService, ManagementService>()
                 .AddTransient<IMessageService, MessageService>();
 
             return serviceCollection.BuildServiceProvider();

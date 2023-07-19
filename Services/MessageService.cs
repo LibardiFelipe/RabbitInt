@@ -3,7 +3,8 @@ using RabbitInt.Clients.Contracts;
 
 namespace RabbitInt.Services
 {
-    internal class MessageService : IMessageService
+    internal class MessageService
+        : IMessageService
     {
         private readonly IRabbitMQBroker _rabbitBroker;
 

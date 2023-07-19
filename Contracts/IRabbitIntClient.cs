@@ -4,6 +4,7 @@ namespace RabbitInt.Contracts
 {
     internal interface IRabbitIntClient
     {
-        IMessageService? Message { get; }
+        IMessageService Message { get; }
+        IManagementService Management { get; }
     }
 }
