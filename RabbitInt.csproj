@@ -4,6 +4,13 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Simple RabbitMQ Integration</Title>
+    <Description>A simple client for sending messages to RabbitMQ.</Description>
+    <PackageProjectUrl>https://github.com/LibardiFelipe/RabbitInt</PackageProjectUrl>
+    <PackageTags>rabbitmq, c#, .net</PackageTags>
+    <Authors>Felipe Libardi Gonçalves</Authors>
+    <Version>1.0.0.0</Version>
   </PropertyGroup>
   
   <ItemGroup>
