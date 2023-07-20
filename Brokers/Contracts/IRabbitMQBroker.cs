@@ -6,5 +6,6 @@ namespace RabbitInt.Brokers.Contracts
     {
         void DeclareQueues(List<RabbitQueue> queues);
         Task PublishToQueueAsync<T>(string exchange, string routingKey, T body);
+        void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate);
     }
 }
