@@ -16,7 +16,7 @@ namespace RabbitInt.Services
         public void DeclareQueues(List<RabbitIntQueue> queues) =>
             _rabbitBroker.DeclareQueues(queues);
 
-        public void BindConsumer<T>(string queue, bool autoAck, Action<object, BasicDeliverEventArgs, T> @delegate) =>
+        public void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate) =>
            _rabbitBroker.BindConsumer(queue, autoAck, @delegate);
     }
 }

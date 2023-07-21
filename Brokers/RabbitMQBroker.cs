@@ -22,11 +22,11 @@ namespace RabbitInt.Brokers
             queues.ForEach(queue =>
                 _channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments));
 
-        public void BindConsumer<T>(string queue, bool autoAck, Action<object, BasicDeliverEventArgs, T> @delegate)
+        public void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate)
         {
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (sender, ea) =>
-                @delegate(sender, ea, JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(ea.Body.ToArray())));
+                @delegate(sender, JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(ea.Body.ToArray())));
 
             _channel.BasicConsume(queue, autoAck, consumer);
         }

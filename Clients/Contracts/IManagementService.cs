@@ -6,6 +6,6 @@ namespace RabbitInt.Clients.Contracts
     public interface IManagementService
     {
         void DeclareQueues(List<RabbitIntQueue> queues);
-        void BindConsumer<T>(string queue, bool autoAck, Action<object, BasicDeliverEventArgs, T> @delegate);
+        void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate);
     }
 }
