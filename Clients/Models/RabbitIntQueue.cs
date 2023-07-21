@@ -1,6 +1,6 @@
 ﻿namespace RabbitInt.Clients.Models
 {
-    public sealed class RabbitQueue
+    public sealed class RabbitIntQueue
     {
         public required string Name { get; set; }
         public required bool Durable { get; set; }
