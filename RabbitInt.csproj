@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/LibardiFelipe/RabbitInt</PackageProjectUrl>
     <PackageTags>rabbitmq, c#, .net</PackageTags>
     <Authors>Felipe Libardi Gonçalves</Authors>
-    <Version>1.0.0.4</Version>
+    <Version>2.0.0.0</Version>
     <IsAotCompatible>true</IsAotCompatible>
     <PublishAot>true</PublishAot>
   </PropertyGroup>
