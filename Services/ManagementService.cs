@@ -1,7 +1,6 @@
 ﻿using RabbitInt.Brokers.Contracts;
 using RabbitInt.Clients.Contracts;
 using RabbitInt.Clients.Models;
-using RabbitMQ.Client.Events;
 
 namespace RabbitInt.Services
 {
@@ -13,10 +12,13 @@ namespace RabbitInt.Services
         public ManagementService(IRabbitMQBroker rabbitBroker) =>
              _rabbitBroker = rabbitBroker;
 
-        public void DeclareQueues(List<RabbitIntQueue> queues) =>
-            _rabbitBroker.DeclareQueues(queues);
+        public Task DeclareQueuesAsync(List<RabbitIntQueue> queues) =>
+            _rabbitBroker.DeclareQueuesAsync(queues);
 
-        public void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate) =>
-           _rabbitBroker.BindConsumer(queue, autoAck, @delegate);
+        public Task BindConsumerAsync<T>(string queue, bool autoAck, Action<object, T> @delegate) =>
+           _rabbitBroker.BindConsumerAsync(queue, autoAck, @delegate);
+
+        public Task BindConsumerAsync<T>(string queue, bool autoAck, Func<object, T, Task> asyncDelegate) =>
+           _rabbitBroker.BindConsumerAsync(queue, autoAck, asyncDelegate);
     }
 }

@@ -1,34 +1,79 @@
-﻿using System.Text;
-using System.Text.Json;
-using RabbitInt.Brokers.Contracts;
+﻿using RabbitInt.Brokers.Contracts;
 using RabbitInt.Clients.Models;
+using RabbitInt.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System.Text;
+using System.Text.Json;
 
 namespace RabbitInt.Brokers
 {
     internal class RabbitMQBroker : IRabbitMQBroker
     {
-        private readonly IModel _channel;
+        private readonly IChannel _channel;
 
-        public RabbitMQBroker(ConnectionFactory connFactory) =>
-            _channel = connFactory.CreateConnection().CreateModel();
-
-        public async Task PublishToQueueAsync<T>(string exchange, string routingKey, T body) =>
-            await Task.Run(() =>
-                _channel.BasicPublish(exchange, routingKey, basicProperties: null, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(body))));
-
-        public void DeclareQueues(List<RabbitIntQueue> queues) =>
-            queues.ForEach(queue =>
-                _channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments));
-
-        public void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate)
+        public RabbitMQBroker(ConnectionFactory connFactory)
         {
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (sender, ea) =>
-                @delegate(sender, JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(ea.Body.ToArray())));
+            var connection = connFactory.CreateConnectionAsync().GetAwaiter().GetResult();
+            _channel = connection.CreateChannelAsync().GetAwaiter().GetResult();
+        }
 
-            _channel.BasicConsume(queue, autoAck, consumer);
+        public async Task PublishToQueueAsync<T>(string exchange, string routingKey, T body)
+        {
+            var properties = new BasicProperties();
+            var bodyBytes = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(body, typeof(T), RabbitIntJsonContext.Default));
+            await _channel.BasicPublishAsync(exchange, routingKey, mandatory: false, properties, bodyBytes)
+                .ConfigureAwait(false);
+        }
+
+        public async Task DeclareQueuesAsync(List<RabbitIntQueue> queues)
+        {
+            foreach (var queue in queues)
+            {
+                await _channel
+                    .QueueDeclareAsync(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        public async Task BindConsumerAsync<T>(string queue, bool autoAck, Action<object, T> @delegate)
+        {
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += async (sender, ea) =>
+            {
+                var messageBody = ea.Body.ToArray();
+                var deserializedMessage = (T)JsonSerializer.Deserialize(Encoding.UTF8.GetString(messageBody), typeof(T), RabbitIntJsonContext.Default);
+                @delegate(sender, deserializedMessage);
+
+                if (!autoAck)
+                {
+                    await _channel.BasicAckAsync(ea.DeliveryTag, false)
+                        .ConfigureAwait(false);
+                }
+            };
+
+            await _channel.BasicConsumeAsync(queue, autoAck, consumer)
+                .ConfigureAwait(false);
+        }
+
+        public async Task BindConsumerAsync<T>(string queue, bool autoAck, Func<object, T, Task> asyncDelegate)
+        {
+            var consumer = new AsyncEventingBasicConsumer(_channel);
+            consumer.ReceivedAsync += async (sender, ea) =>
+            {
+                var messageBody = ea.Body.ToArray();
+                var deserializedMessage = (T)JsonSerializer.Deserialize(Encoding.UTF8.GetString(messageBody), typeof(T), RabbitIntJsonContext.Default);
+                await asyncDelegate(sender, deserializedMessage);
+
+                if (!autoAck)
+                {
+                    await _channel.BasicAckAsync(ea.DeliveryTag, false)
+                        .ConfigureAwait(false);
+                }
+            };
+
+            await _channel.BasicConsumeAsync(queue, autoAck, consumer)
+                .ConfigureAwait(false);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using RabbitInt.Clients.Models;
-using RabbitMQ.Client.Events;
 
 namespace RabbitInt.Clients.Contracts
 {
     public interface IManagementService
     {
-        void DeclareQueues(List<RabbitIntQueue> queues);
-        void BindConsumer<T>(string queue, bool autoAck, Action<object, T> @delegate);
+        Task DeclareQueuesAsync(List<RabbitIntQueue> queues);
+        Task BindConsumerAsync<T>(string queue, bool autoAck, Action<object, T> @delegate);
+        Task BindConsumerAsync<T>(string queue, bool autoAck, Func<object, T, Task> asyncDelegate);
     }
 }

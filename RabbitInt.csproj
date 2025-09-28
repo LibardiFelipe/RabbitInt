@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Simple RabbitMQ Integration</Title>
     <Description>A simple client for sending messages to RabbitMQ.</Description>
     <PackageProjectUrl>https://github.com/LibardiFelipe/RabbitInt</PackageProjectUrl>
     <PackageTags>rabbitmq, c#, .net</PackageTags>
     <Authors>Felipe Libardi Gonçalves</Authors>
-    <Version>1.0.0.3</Version>
+    <Version>1.0.0.4</Version>
+    <IsAotCompatible>true</IsAotCompatible>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.9" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
   </ItemGroup>
   
 </Project>
